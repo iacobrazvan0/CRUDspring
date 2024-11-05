@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Product</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+<h1>Edit Product</h1>
+
+<form id="editProductForm">
+    <input type="hidden" id="productId">
+    <input type="text" id="name" placeholder="Product Name" required>
+    <input type="text" id="description" placeholder="Product Description" required>
+    <input type="number" id="price" placeholder="Product Price" required>
+    <button type="submit">Update Product</button>
+</form>
+
+<script>
+    const apiUrl = '/api/products';
+
+    // Function to fetch product details for editing
+    function fetchProduct(id) {
+        $.get(`${apiUrl}/${id}`, function(product) {
+            $('#productId').val(product.id);
+            $('#name').val(product.name);
+            $('#description').val(product.description);
+            $('#price').val(product.price);
+        });
+    }
+
+    // Function to update a product
+    $('#editProductForm').submit(function(event) {
+        event.preventDefault();
+        const updatedProduct = {
+            name: $('#name').val(),
+            description: $('#description').val(),
+            price: parseFloat($('#price').val())
+        };
+        const id = $('#productId').val();
+
+        $.ajax({
+            url: `${apiUrl}/${id}`,
+            type: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify(updatedProduct),
+            success: function() {
+                window.location.href = 'index.html'; // Redirect back to the main page
+            }
+        });
+    });
+
+    // Get the product ID from the URL and fetch product details
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    fetchProduct(productId);
+</script>
+</body>
+</html>
